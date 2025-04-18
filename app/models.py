@@ -40,8 +40,8 @@ class Mechanic(Base):
 class Service_Mechanic(Base):
     __tablename__ = 'service_mechanics'
 
-    ticket_id: Mapped[int] = mapped_column(db.ForeignKey('servicetickets.id'), ondelete="CASCADE", primary_key=True)
-    mechanic_id: Mapped[int] = mapped_column(db.ForeignKey('mechanics.id'),ondelete="CASCADE", primary_key=True)
+    ticket_id: Mapped[int] = mapped_column(db.ForeignKey('servicetickets.id'),primary_key=True)
+    mechanic_id: Mapped[int] = mapped_column(db.ForeignKey('mechanics.id'), primary_key=True)
 
 
 class Service_Ticket(Base):
@@ -54,8 +54,8 @@ class Service_Ticket(Base):
     customer_id: Mapped[int] = mapped_column(db.ForeignKey('customers.id'))
 
     # Many-to-Many relationship with Mechanic
-    mechanics: Mapped[List["Mechanic"]] = relationship(
+    mechanics: Mapped[List["Mechanic"]] = db.relationship(
         "Mechanic",
         secondary="service_mechanics",  # Association table name
-        back_populates="service_tickets"
+        back_populates="service_tickets", cascade="all, delete"
     )

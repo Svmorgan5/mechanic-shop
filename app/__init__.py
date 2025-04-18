@@ -1,9 +1,10 @@
 from flask import Flask
 from app.models import db
-from app.extensions import ma
+from app.extensions import ma, limiter
 from app.blueprint.customers import customers_bp
 from app.blueprint.mechanics import mechanics_bp
 from app.blueprint.servicetickets import servicetickets_bp
+
 
 def create_app(config_name):
 
@@ -12,6 +13,7 @@ def create_app(config_name):
     # add extensions
     db.init_app(app)
     ma.init_app(app)
+    limiter.init_app(app)
 
     #registering Blueprints
     app.register_blueprint(customers_bp, url_prefix='/customers')

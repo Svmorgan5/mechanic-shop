@@ -4,13 +4,14 @@ from flask import request, jsonify
 from app.models import db, Customer
 from marshmallow import ValidationError
 from sqlalchemy import select, delete
+from app.extensions import limiter
 
 
 @customers_bp.route('/', methods=['POST'])
+@limiter.limit("5 per hour")  # Limit to 5 requests per minute
 def add_customer():
    try:
       customer_data = customer_schema.load(request.json)
-      
    except ValidationError as e:
       return jsonify(e.messages), 400
    

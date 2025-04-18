@@ -56,9 +56,11 @@ def update_serviceticket(serviceticket_id):
 
 @servicetickets_bp.route("/<int:serviceticket_id>", methods=['DELETE'])
 def delete_serviceticket(serviceticket_id):  # Match the parameter name
-    query = delete(Service_Ticket).where(Service_Ticket.id == serviceticket_id)
-    db.session.execute(query)
+    query = select(Service_Ticket).where(Service_Ticket.id == serviceticket_id)
+    serviceticket= db.session.execute(query).scalars().first()
 
+
+    db.session.delete(serviceticket)
     db.session.commit()
     return jsonify({"message": f"Successfully deleted service ticket {serviceticket_id}"})
 
