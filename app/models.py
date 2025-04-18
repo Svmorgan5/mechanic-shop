@@ -40,8 +40,8 @@ class Mechanic(Base):
 class Service_Mechanic(Base):
     __tablename__ = 'service_mechanics'
 
-    ticket_id: Mapped[int] = mapped_column(db.ForeignKey('servicetickets.id'), primary_key=True)
-    mechanic_id: Mapped[int] = mapped_column(db.ForeignKey('mechanics.id'), primary_key=True)
+    ticket_id: Mapped[int] = mapped_column(db.ForeignKey('servicetickets.id'), ondelete="CASCADE", primary_key=True)
+    mechanic_id: Mapped[int] = mapped_column(db.ForeignKey('mechanics.id'),ondelete="CASCADE", primary_key=True)
 
 
 class Service_Ticket(Base):
