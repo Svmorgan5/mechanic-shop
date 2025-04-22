@@ -74,7 +74,7 @@ class ServiceTicket(Base):
 class Inventory(Base):
     __tablename__ = 'inventory'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable = False)
     price: Mapped[float] = mapped_column(db.Float, nullable = False)
 
