@@ -9,22 +9,22 @@ from sqlalchemy import select, delete
 #-----CREATE------#
 @inventory_bp.route('/', methods=['POST'])
 def create_part():
-    try:
-        inventory_data = inventory_schema.load(request.json)
-        print(inventory_data)
-    except ValidationError as err:
-        return jsonify(err.messages), 400
+   try:
+      inventory_data = inventory_schema.load(request.json)
+      print(inventory_data)
+   except ValidationError as err:
+      return jsonify(err.messages), 400
 
         # Create a new part instance
-    new_part = Inventory(id=inventory_data['id'],
-                                       name=inventory_data['name'],
-                                       price=inventory_data['price'],
-                                       ) 
+   new_part = Inventory(id=inventory_data['id'],
+                        name=inventory_data['name'],
+                        price=inventory_data['price'],
+   ) 
 
-    db.session.add(new_part)
-    db.session.commit()
+   db.session.add(new_part)
+   db.session.commit()
 
-    return inventory_schema.jsonify(new_part)
+   return inventory_schema.jsonify(new_part)
 
 
 #---------READ---------#

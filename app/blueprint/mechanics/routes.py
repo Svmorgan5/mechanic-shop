@@ -23,7 +23,7 @@ def add_mechanic():
 
    db.session.add(new_mechanic)
    db.session.commit()
-   return mechanic_schema.jsonify(new_mechanic), 200
+   return mechanic_schema.jsonify(new_mechanic), 201
 
 
 @mechanics_bp.route('/', methods=['GET'])
@@ -55,33 +55,33 @@ def update_mechanic(mechanic_id):
 
 @mechanics_bp.route("/<int:mechanic_id>", methods=['DELETE'])
 def delete_mechanic(mechanic_id):
-    query = select(Mechanic).where(Mechanic.id == mechanic_id)
-    mechanic = db.session.execute(query).scalars().first()
+   query = select(Mechanic).where(Mechanic.id == mechanic_id)
+   mechanic = db.session.execute(query).scalars().first()
 
 
-    db.session.delete(mechanic)
-    db.session.commit()
-    return jsonify({"message": f"succesfully deleted mechanic {mechanic_id}"})
+   db.session.delete(mechanic)
+   db.session.commit()
+   return jsonify({"message": f"succesfully deleted mechanic {mechanic_id}"})
 
 @mechanics_bp.route('/<int:mechanic_id>/assign_ticket/<int:serviceticket_id>', methods=['POST'])
 def assign_ticket_to_mechanic(mechanic_id, serviceticket_id):
-    query = select(Mechanic).where(Mechanic.id == mechanic_id)
-    mechanic = db.session.execute(query).scalars().first()
+   query = select(Mechanic).where(Mechanic.id == mechanic_id)
+   mechanic = db.session.execute(query).scalars().first()
 
-    if not mechanic:
-        return jsonify({"message": "Mechanic not found"}), 400
+   if not mechanic:
+      return jsonify({"message": "Mechanic not found"}), 400
 
-    query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
-    serviceticket = db.session.execute(query).scalars().first()
+   query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
+   serviceticket = db.session.execute(query).scalars().first()
 
-    if not serviceticket:
-        return jsonify({"message": "Service ticket not found"}), 400
+   if not serviceticket:
+      return jsonify({"message": "Service ticket not found"}), 400
 
     # Assign the service ticket to the mechanic
-    mechanic.servicetickets.append(serviceticket)
-    db.session.commit()
+   mechanic.servicetickets.append(serviceticket)
+   db.session.commit()
 
-    return jsonify({"message": "Service ticket assigned to mechanic successfully!"}), 200
+   return jsonify({"message": "Service ticket assigned to mechanic successfully!"}), 200
 
 @mechanics_bp.route("/mosttickets", methods=['GET'])
 def most_tickets():

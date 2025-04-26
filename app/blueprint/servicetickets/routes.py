@@ -17,10 +17,10 @@ def create_serviceticket():
 
         # Create a new Serviceticket instance
     new_serviceticket = ServiceTicket(vin=serviceticket_data['vin'],
-                                       service_date=serviceticket_data['service_date'],
-                                       service_description=serviceticket_data['service_description'],
-                                       customer_id=serviceticket_data['customer_id'],
-                                       ) 
+                                    service_date=serviceticket_data['service_date'],
+                                    service_description=serviceticket_data['service_description'],
+                                    customer_id=serviceticket_data['customer_id'],
+                                    ) 
 
     db.session.add(new_serviceticket)
     db.session.commit()
@@ -31,32 +31,32 @@ def create_serviceticket():
 @servicetickets_bp.route('/', methods=['GET'])
 @cache.cached(timeout=60) # Cache the response to pull data faster
 def get_servicetickets():
-   query = select(ServiceTicket)
-   result = db.session.execute(query).scalars().all()
-   return servicetickets_schema.jsonify(result), 200
+    query = select(ServiceTicket)
+    result = db.session.execute(query).scalars().all()
+    return servicetickets_schema.jsonify(result), 200
 
 
 @servicetickets_bp.route('/<int:serviceticket_id>', methods=['PUT'])
 def update_serviceticket(serviceticket_id):
-   query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
-   serviceticket = db.session.execute(query).scalars().first()
+    query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
+    serviceticket = db.session.execute(query).scalars().first()
+    
+    if serviceticket == None:
+        return jsonify({"error": "Service ticket not found"}), 200
+    try:
+        serviceticket_data = serviceticket_schema.load(request.json)
 
-   if serviceticket == None:
-      return jsonify({"error": "Service ticket not found"}), 200
-   try:
-      serviceticket_data = serviceticket_schema.load(request.json)
-      
-   except ValidationError as e:
-      return jsonify(e.messages), 400
-   
-   for field, value in serviceticket_data.items():
-      setattr(serviceticket, field, value)
-
-   db.session.commit()
-   return serviceticket_schema.jsonify(serviceticket), 200
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
+    for field, value in serviceticket_data.items():
+        setattr(serviceticket, field, value)
+        
+    db.session.commit()
+    return serviceticket_schema.jsonify(serviceticket), 200
 
 @servicetickets_bp.route("/<int:serviceticket_id>", methods=['DELETE'])
-def delete_serviceticket(serviceticket_id):  # Match the parameter name
+def delete_serviceticket(serviceticket_id):  
     query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
     serviceticket= db.session.execute(query).scalars().first()
 
@@ -66,16 +66,22 @@ def delete_serviceticket(serviceticket_id):  # Match the parameter name
     return jsonify({"success": f"Successfully deleted service ticket {serviceticket_id}"})
 
 
-@servicetickets_bp.route('/<int:ticket_id>/assign_ticket/<int:mechanic_id>', methods=['POST'])
+@servicetickets_bp.route('/<int:serviceticket_id>/assign_ticket/<int:mechanic_id>', methods=['POST'])
 def assign_mechanic_to_serviceticket(serviceticket_id, mechanic_id):
     query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
     serviceticket = db.session.execute(query).scalars().first()
 
     if not serviceticket:
         return jsonify({"error": "Service ticket not found"}), 400
+    
+    query = select(Mechanic).where(Mechanic.id == mechanic_id)
+    mechanic = db.session.execute(query).scalars().first()
+
+    if not mechanic:
+        return jsonify({"error": "Mechanic not found"}), 400
 
     
-    serviceticket.mechanics.append(mechanic_id)
+    serviceticket.mechanics.append(mechanic)
     db.session.commit()
 
     return jsonify({"Success": "Mechanic assigned to service ticket successfully!"}), 200
@@ -95,14 +101,13 @@ def get_mechanic_for_serviceticket(serviceticket_id):
 
     
     mechanics_data = [{"id": mechanic.id, "name": mechanic.name, 
-                       "email": mechanic.email} for mechanic in mechanics]
+                    "email": mechanic.email} for mechanic in mechanics]
 
     return jsonify({"service_ticket_id": serviceticket_id, "mechanics": mechanics_data}), 200
 
 @servicetickets_bp.route('/update_mechanics/<int:serviceticket_id>', methods=['PUT'])
 def update_mechanic_for_serviceticket(serviceticket_id):
     try:
-        # Validate the incoming JSON payload
         serviceticket_edit = update_serviceticket_schema.load(request.json)
     except ValidationError as e:
         return jsonify(e.messages), 400
@@ -170,7 +175,7 @@ def add_part_to_serviceticket(serviceticket_id, inventory_id):
     
     serviceticket.inventory.append(inventory)
     db.session.commit()
-    return jsonify({"Success": "Part assigned to mechanic successfully!"}), 200
+    return jsonify({"Success": "Part assigned to ticket successfully!"}), 200
     
 
     

@@ -59,6 +59,7 @@ class ServiceTicket(Base):
     service_description: Mapped[str] = mapped_column(db.String(255))
     customer_id: Mapped[int] = mapped_column(db.ForeignKey('customers.id'), nullable=False)
 
+
     #Many to One relationship with Customer
     customers: Mapped["Customer"] = db.relationship( back_populates="servicetickets")
 

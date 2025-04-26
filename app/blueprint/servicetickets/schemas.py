@@ -9,11 +9,13 @@ class ServiceticketSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         fields = ('id','vin','service_date','service_description','customer_id', 'mechanic_id')
 
+    mechanic_id = fields.List(fields.Int(attribute="mechanics.id"))
+
 class UpdateServiceticketSchema(ma.Schema):
     add_mechanic_id = fields.List(fields.Int(), required=True)
     remove_mechanic_id = fields.List(fields.Int(), required=True)
     class Meta:
-       fields = ('add_mechanic_id', 'remove_mechanic_id')
+        fields = ('add_mechanic_id', 'remove_mechanic_id')
 
 serviceticket_schema = ServiceticketSchema()
 servicetickets_schema = ServiceticketSchema(many=True)
