@@ -47,7 +47,8 @@ def update_mechanic(mechanic_id):
       return jsonify(e.messages), 400
    
    for field, value in mechanic_data.items():
-      setattr(mechanic, field, value)
+      if value:
+         setattr(mechanic, field, value)
 
    db.session.commit()
    return mechanic_schema.jsonify(mechanic), 200
@@ -61,7 +62,7 @@ def delete_mechanic(mechanic_id):
 
    db.session.delete(mechanic)
    db.session.commit()
-   return jsonify({"message": f"succesfully deleted mechanic {mechanic_id}"})
+   return jsonify({"message": "Mechanic deleted successfully"})
 
 @mechanics_bp.route('/<int:mechanic_id>/assign_ticket/<int:serviceticket_id>', methods=['POST'])
 def assign_ticket_to_mechanic(mechanic_id, serviceticket_id):
@@ -77,7 +78,7 @@ def assign_ticket_to_mechanic(mechanic_id, serviceticket_id):
    if not serviceticket:
       return jsonify({"message": "Service ticket not found"}), 400
 
-    # Assign the service ticket to the mechanic
+   # Assign the service ticket to the mechanic
    mechanic.servicetickets.append(serviceticket)
    db.session.commit()
 

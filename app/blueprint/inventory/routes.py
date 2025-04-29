@@ -15,7 +15,7 @@ def create_part():
    except ValidationError as err:
       return jsonify(err.messages), 400
 
-        # Create a new part instance
+      # Create a new part instance
    new_part = Inventory(id=inventory_data['id'],
                         name=inventory_data['name'],
                         price=inventory_data['price'],
@@ -24,7 +24,7 @@ def create_part():
    db.session.add(new_part)
    db.session.commit()
 
-   return inventory_schema.jsonify(new_part)
+   return inventory_schema.jsonify(new_part), 201
 
 
 #---------READ---------#
@@ -50,10 +50,11 @@ def update_part(inventory_id):
       return jsonify(e.messages), 400
    
    for field, value in inventory_data.items():
-      setattr(inventory, field, value)
+      if value:
+         setattr(inventory, field, value)
 
    db.session.commit()
-   return inventory_schema.jsonify(inventory), 200
+   return inventory_schema.jsonify(inventory), 201
 
 #---------DELETE---------#
 
@@ -65,5 +66,5 @@ def delete_part(inventory_id):
    
    db.session.delete(inventory)
    db.session.commit()
-   return jsonify({"message": f"Successfully deleted part number {inventory_id}"})
+   return jsonify({"message": "Part deleted successfully"}), 200
 

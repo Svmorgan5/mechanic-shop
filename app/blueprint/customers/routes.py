@@ -31,7 +31,7 @@ def login():
       
       return jsonify(response), 200
    else:
-      return jsonify({"message": "Invlaid email or password!"}), 401
+      return jsonify({"message": "Invalid email or password!"}), 401
 
 
 @customers_bp.route('/', methods=['POST'])
@@ -105,7 +105,8 @@ def update_customer(customer_id):
       return jsonify({"error": "Email already exists"}), 400
 
    for field, value in customer_data.items():
-      setattr(customer, field, value)
+      if value:
+         setattr(customer, field, value)
 
    db.session.commit()
    return customer_schema.jsonify(customer), 200
@@ -114,14 +115,14 @@ def update_customer(customer_id):
 @token_required
 def delete_customer(customer_id):
     # Fetch the customer using the customer_id
-    query = select(Customer).where(Customer.id == customer_id)
-    customer = db.session.execute(query).scalars().first()
+   query = select(Customer).where(Customer.id == customer_id)
+   customer = db.session.execute(query).scalars().first()
 
-    if not customer:
-        return jsonify({"message": "Customer not found"}), 400
+   if not customer:
+      return jsonify({"message": "Customer not found"}), 400
 
-    # Delete the customer
-    db.session.delete(customer)
-    db.session.commit()
+   # Delete the customer
+   db.session.delete(customer)
+   db.session.commit()
 
-    return jsonify({"message": f"Successfully deleted customer {customer_id}"}), 200
+   return jsonify({"message":"Customer deleted successfully."}), 200

@@ -25,7 +25,7 @@ def create_serviceticket():
     db.session.add(new_serviceticket)
     db.session.commit()
 
-    return serviceticket_schema.jsonify(new_serviceticket)
+    return serviceticket_schema.jsonify(new_serviceticket),201
 
 
 @servicetickets_bp.route('/', methods=['GET'])
@@ -63,7 +63,7 @@ def delete_serviceticket(serviceticket_id):
 
     db.session.delete(serviceticket)
     db.session.commit()
-    return jsonify({"success": f"Successfully deleted service ticket {serviceticket_id}"})
+    return jsonify({"message": "Service ticket deleted successfully"})
 
 
 @servicetickets_bp.route('/<int:serviceticket_id>/assign_ticket/<int:mechanic_id>', methods=['POST'])
@@ -84,7 +84,7 @@ def assign_mechanic_to_serviceticket(serviceticket_id, mechanic_id):
     serviceticket.mechanics.append(mechanic)
     db.session.commit()
 
-    return jsonify({"Success": "Mechanic assigned to service ticket successfully!"}), 200
+    return jsonify({"message": "Mechanic assigned to service ticket successfully!"}), 200
 
 
 @servicetickets_bp.route('/<int:serviceticket_id>/mechanics', methods=['GET'])
@@ -114,6 +114,9 @@ def update_mechanic_for_serviceticket(serviceticket_id):
 
     query = select(ServiceTicket).where(ServiceTicket.id == serviceticket_id)
     serviceticket = db.session.execute(query).scalars().first()
+
+    if not serviceticket:
+        return jsonify({"message": "Service ticket not found"}), 404
 
     for mechanic_id in serviceticket_edit['add_mechanic_id']:
         query = select(Mechanic).where(Mechanic.id == mechanic_id)
@@ -176,8 +179,8 @@ def add_part_to_serviceticket(serviceticket_id, inventory_id):
     serviceticket.inventory.append(inventory)
     db.session.commit()
     return jsonify({"Success": "Part assigned to ticket successfully!"}), 200
-    
 
-    
 
-    
+
+
+

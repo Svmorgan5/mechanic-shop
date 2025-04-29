@@ -360,7 +360,7 @@ paths:
               email: "A@email.com"
               id: "1231233"
               name: "Alex"
-              
+
 
   /servicetickets/update_mechanics/{id}:
     put:

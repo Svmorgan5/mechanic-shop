@@ -14,9 +14,9 @@ def encode_token(customer_id):
         'iat': datetime.now(timezone.utc),
         'sub': str(customer_id)  # Convert customer_id to a string
     }
-    print(f"Token Payload: {payload}")  # Log the payload
+    
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    print(f"Generated Token: {token}")  # Log the generated token
+    
     return token
 
 
@@ -24,8 +24,8 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        print(f"Current UTC Time: {datetime.now(timezone.utc)}")
-        print(f"Authorization Header: {request.headers.get('Authorization')}")
+        # print(f"Current UTC Time: {datetime.now(timezone.utc)}") DEBUGGING PRINT STATEMENT
+        # print(f"Authorization Header: {request.headers.get('Authorization')}") DEBUGGING PRINT STATEMENT
 
         if 'Authorization' in request.headers:
 
@@ -36,7 +36,7 @@ def token_required(f):
             
             try:
                 data = jwt.decode(token, SECRET_KEY, algorithms='HS256')
-                print(data)
+                #print(data) token data for debuggings
                 customer_id = data['sub']
             except jwt.ExpiredSignatureError as e:
                 return jsonify({'message': 'token expired'}), 400
