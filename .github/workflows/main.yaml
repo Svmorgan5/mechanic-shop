@@ -5,6 +5,28 @@ on:
     branches: [main, master]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+          - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Build application
+        run: |
+          echo "Building application..."
+          # Add your build commands here, e.g., compiling assets or preparing the environment
+
   test:
     runs-on: ubuntu-latest
 
