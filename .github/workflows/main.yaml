@@ -5,11 +5,7 @@ on:
     branches: [main, master]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
   test:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
